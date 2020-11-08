@@ -47,15 +47,4 @@ public class TrainHistoryController {
         return JsonResult.success();
     }
 
-    @GetMapping("/train-histories/student-name/like")
-    public JsonResult pageStuNameLike(@RequestParam String studentName, Pager pager) {
-        return JsonResult.success(
-                trainHistoryService.pageStuNameLike(studentName, pager));
-    }
-
-    @GetMapping("/train-histories/score-line/{id}")
-    public JsonResult computeScoreLine(@PathVariable Long id) {
-        return JsonResult.success(trainHistoryService.getScoreLine(id));
-    }
-
 }

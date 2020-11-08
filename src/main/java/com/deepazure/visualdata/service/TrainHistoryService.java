@@ -5,10 +5,9 @@ import com.deepazure.visualdata.entity.TrainHistory;
 import com.deepazure.visualdata.util.Pager;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface TrainHistoryService extends BaseService<TrainHistory> {
 
-    Page<TrainHistory> pageStuNameLike(String stuName, Pager pager);
-
-    ScoreLine getScoreLine(Long id);
 
 }

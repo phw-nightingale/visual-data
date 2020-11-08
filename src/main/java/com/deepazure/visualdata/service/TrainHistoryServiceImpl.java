@@ -1,6 +1,5 @@
 package com.deepazure.visualdata.service;
 
-import com.deepazure.visualdata.bo.ScoreLine;
 import com.deepazure.visualdata.config.WebSocketServer;
 import com.deepazure.visualdata.entity.Lesson;
 import com.deepazure.visualdata.entity.TrainHistory;
@@ -10,14 +9,10 @@ import com.deepazure.visualdata.repository.TrainHistoryRepository;
 import com.deepazure.visualdata.repository.UserRepository;
 import com.deepazure.visualdata.util.Message;
 import com.deepazure.visualdata.util.Observer;
-import com.deepazure.visualdata.util.Pager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -65,42 +60,17 @@ public class TrainHistoryServiceImpl extends BaseServiceImpl<TrainHistory> imple
         if (item.getUsedTime() == null) {
             throw new IllegalArgumentException("used_time: 数据不完整");
         }
-    }
 
-    @Override
-    public TrainHistory save(TrainHistory history) {
-        User stu = userRepository.findById(history.getUserId()).orElse(null);
+        User stu = userRepository.findById(item.getUserId()).orElse(null);
         if (stu == null) {
             throw new IllegalArgumentException("user_id: 找不到此用户");
         }
-
-        history.setStudentName(stu.getUsername());
-        Lesson lesson = lessonRepository.findById(history.getCourseId()).orElse(null);
+        item.setStudentName(stu.getUsername());
+        Lesson lesson = lessonRepository.findById(item.getCourseId()).orElse(null);
         if (lesson == null) {
             throw new IllegalArgumentException("course_id: 找不到此课程");
         }
-        history.setCourseTitle(lesson.getTitle());
-        history = trainHistoryRepository.saveAndFlush(history);
-        return history;
-    }
-
-    @Override
-    public Page<TrainHistory> pageStuNameLike(String stuName, Pager pager) {
-        Pageable pageable = PageRequest.of(pager.getPage(), pager.getSize());
-        return trainHistoryRepository.findByStudentNameLike(stuName, pageable);
-    }
-
-    @Override
-    public ScoreLine getScoreLine(Long id) {
-        User student = userRepository.findById(id).orElse(null);
-        if (student == null) {
-            throw new IllegalArgumentException("id: 找不到此学员");
-        }
-        ScoreLine line = new ScoreLine();
-        line.setStudent(student);
-        line.setStudentId(id);
-        line.setScores(trainHistoryRepository.findScoresByUserId(id));
-        return line;
+        item.setCourseTitle(lesson.getTitle());
     }
 
     private void onTrainHistoryMessage() {
